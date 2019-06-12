@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+   <body>
+      <canvas width = "600" height = "600" id = "Canvas"></canvas>
+    <h1> App poligono</h1>
+       <h2>Funciona, pero se tiene que cambiar el color y los vertices del poligono desde el codigo donde está especificado</h2>
+        <h3>Diego Vargas, Juan Sanabria, Jose Delgado</h3> 
+         <script>
+           var canvas = document.getElementById('Canvas');
+            gl = canvas.getContext('webgl');
+ 
+//Vertices del poligono 
+let x1=1.0;
+let y1=1.0;
+             
+let x2=-.5;
+let y2=.5;
+             
+let x3=-.5;
+let y3=-.7;
+          
+
+ var verti = [
+  x1,y1,0.0,
+  x2,y2,0.0,
+  x3,y3,0.0, 
+                       ];
+         
+         op = [0,1,2];
+         
+         var vertex = gl.createBuffer();
+         gl.bindBuffer(gl.ARRAY_BUFFER, vertex);
+         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verti), gl.STATIC_DRAW);
+         gl.bindBuffer(gl.ARRAY_BUFFER, null);
+         var Index = gl.createBuffer();
+         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index);
+         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(op), gl.STATIC_DRAW);
+         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+var vertCode ='attribute vec3 coordinates;' + 'void main(void) {' + ' gl_Position = vec4(coordinates, 1.0);' + '}';
+         var vertShader = gl.createShader(gl.VERTEX_SHADER);
+         gl.shaderSource(vertShader, vertCode);
+         gl.compileShader(vertShader); 
+
+//Color del poligono 
+var fragCode ='void main(void) {' + ' gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' +'}';
+            
+//Shaders             
+         var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+         gl.shaderSource(fragShader, fragCode);      
+         gl.compileShader(fragShader);
+         var shaderProgram = gl.createProgram();
+         gl.attachShader(shaderProgram, vertShader);
+         gl.attachShader(shaderProgram, fragShader);
+         gl.linkProgram(shaderProgram);
+         gl.useProgram(shaderProgram);
+        
+//Asociar Shaders a los buffers     
+         gl.bindBuffer(gl.ARRAY_BUFFER, vertex);
+         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index);
+         var coord = gl.getAttribLocation(shaderProgram, "coordinates");
+         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 0, 0); 
+         gl.enableVertexAttribArray(coord);
+
+             
+//Color (Azul) y caracteristicas del canvas, dibujo del poligono(Gris con los colores que dejamos en el codigo)
+         gl.clearColor(0.25, 0.25, 0.75, 1.0);
+             
+             
+             
+         gl.enable(gl.DEPTH_TEST);
+         gl.clear(gl.COLOR_BUFFER_BIT);
+         gl.viewport(0,0,canvas.width,canvas.height);
+         gl.drawElements(gl.TRIANGLES, op.length, gl.UNSIGNED_SHORT,0);
+//Referencias de codigos
+// http://ayudasprogramacionweb.blogspot.com/2012/09/introduccion-a-los-shaders-en-WebGL.html
+// https://www.youtube.com/watch?v=iMsV2TFdA0o
+// https://gamedevelopment.tutsplus.com/es/tutorials/getting-started-in-webgl-part-2-running-our-first-shader-the-canvas-element--cms-26556
+// https://www.tutorialspoint.com/webgl/webgl_drawing_a_triangle.htm
+          
+      </script>
+    </body>
+</html>
